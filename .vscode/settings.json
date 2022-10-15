@@ -1,0 +1,4 @@
+{
+  "jest.jestCommandLine": "npm run test --",
+  "jest.autoRun": { "watch": true } // 起動時にjestを走らせない
+}
