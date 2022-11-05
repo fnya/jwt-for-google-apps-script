@@ -393,7 +393,7 @@ describe('Jwt のテスト', () => {
         }).toThrow('アクセストークンが不正です');
       });
 
-      test('ペイロードクレームの必須項目が一部ないは例外が発生すること', () => {
+      test('ペイロードクレームのexpが期限切れの場合は例外が発生すること', () => {
         // 準備
         const accessToken = 'header.payload.sigunature';
         const target = 'header.payload';
@@ -429,6 +429,42 @@ describe('Jwt のテスト', () => {
         expect(() => {
           jwt.validate(privateKey, Algorithm.HS256, accessToken);
         }).toThrow('アクセストークンが不正です');
+      });
+
+      test('ペイロードクレームに問題がない場合は例外が発生しないこと', () => {
+        // 準備
+        const accessToken = 'header.payload.sigunature';
+        const target = 'header.payload';
+        const privateKey = 'privateKey';
+        const sigunatureBytes = [1, 2];
+        const sigunature = 'sigunature';
+        const decodedHeader = { alg: Algorithm.HS256, typ: JwtType.JWT };
+        const decodedPayload = {
+          iss: 'iss',
+          sub: 'sub',
+          aud: 'aud',
+          exp: 1667577724,
+        }; // 1秒期限あり
+
+        const mockDate = new Date(2022, 10, 5, 1, 2, 3); /// 1667577723
+        jest.useFakeTimers();
+        jest.setSystemTime(mockDate);
+
+        when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
+          sigunature
+        );
+        when(
+          gasUtilitiesMock.computeHmacSha256Signature(target, privateKey)
+        ).thenReturn(sigunatureBytes);
+        when(
+          gasUtilitiesMock.base64DecodeWebSafeAndToObject('header')
+        ).thenReturn(decodedHeader);
+        when(
+          gasUtilitiesMock.base64DecodeWebSafeAndToObject('payload')
+        ).thenReturn(decodedPayload);
+
+        // 実行&検証
+        jwt.validate(privateKey, Algorithm.HS256, accessToken);
       });
     });
   });
