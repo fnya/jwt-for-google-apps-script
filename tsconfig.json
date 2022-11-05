@@ -9,17 +9,14 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    // 共通ライブラリは以下を設定する
-    "declaration": true, // type を作成
+    "declaration": true,
     "declarationMap": true,
-    "composite": true, // 参照可
-    // InversifyJS に不足しているものを設定
+    "composite": true,
     "lib": ["es6", "dom"],
-    "types": ["reflect-metadata"],
+    "types": ["google-apps-script"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  // 共通ライブラリは以下を設定する
   "references": [],
   "include": ["./src/**/*", "./node_modules/@types/google-apps-script/**/*"]
 }
