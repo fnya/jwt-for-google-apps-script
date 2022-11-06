@@ -1,6 +1,6 @@
 {
   "name": "jwt-for-google-apps-script",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "JWT library for Google Apps Script",
   "main": "index.js",
   "scripts": {
