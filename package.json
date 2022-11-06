@@ -1,14 +1,11 @@
 {
   "name": "jwt-for-google-apps-script",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "JWT library for Google Apps Script",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "clean": "rm -rf dist",
-    "prebuildpackage": "npm run clean && npm run build",
-    "buildpackage": "cd dist && npm pack"
+    "test": "jest"
   },
   "author": "fnya",
   "license": "MIT",

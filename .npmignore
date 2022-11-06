@@ -3,6 +3,7 @@ coverage/
 .DS_Store
 test/
 dist/
+src/
 .vscode/
 babel.config.js
 jest.config.js
