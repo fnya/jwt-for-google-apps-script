@@ -1,8 +1,8 @@
 # JWT for Google Apps Script
 
-## はじめに
-
 `JWT for Google Apps Script` は、TypeScript で作成された Google Apps Script 用の ライブラリです。
+
+MIT ライセンスになります。
 
 ## 前提条件
 
@@ -25,6 +25,8 @@ Windows や Mac、スマートフォンのアプリなどで使用すること�
 
 ## インストール方法
 
+npm で以下のようにインストールします。
+
 ```sh
 $ npm install jwt-for-google-apps-script
 ```
@@ -44,7 +46,7 @@ const jwt = JwtFactory.crete();
 アクセストークンは、認証済みユーザーに発行するトークンです。
 
 ```typescript
-// HMAC-SHA256 のシステムごとの秘密鍵(32文字以上の文字列を推奨)
+// HMAC-SHA256 のシステムごとの秘密鍵を指定(32文字以上の文字列を推奨)
 const privateKey = '<秘密鍵>';
 
 // ヘッダークレームの作成
