@@ -1,13 +1,11 @@
 /* eslint-disable no-undef */
-import { Algorithm } from './constant/Algorithm';
 import { GasUtilities } from './utility/GasUtilities';
-import { JwtType } from './constant/JwtType';
 import { Message } from './constant/Message';
 
 /** JWT クラス */
 export class Jwt {
   private gasUtilities: GasUtilities;
-  private algorithms: Algorithm[];
+  private algorithms: string[];
   private requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp']; // default
 
   /**
@@ -16,7 +14,7 @@ export class Jwt {
    * @param gasUtilities GasUtilities
    * @param algorithms 署名アルゴリズム配列
    */
-  constructor(gasUtilities: GasUtilities, algorithms: Algorithm[]) {
+  constructor(gasUtilities: GasUtilities, algorithms: string[]) {
     this.gasUtilities = gasUtilities;
     this.algorithms = algorithms;
   }
@@ -60,11 +58,8 @@ export class Jwt {
    * @param jwtType JWTのメディアタイプ
    * @returns ヘッダークレーム
    */
-  public createHeaderClaim(
-    algorithm: Algorithm,
-    jwtType: JwtType = JwtType.UNKOWN
-  ): any {
-    if (jwtType === JwtType.UNKOWN) {
+  public createHeaderClaim(algorithm: string, jwtType: string = 'UNKOWN'): any {
+    if (jwtType === 'UNKOWN') {
       return { alg: algorithm };
     }
 
@@ -114,7 +109,7 @@ export class Jwt {
    * @returns 署名
    */
   public sign(target: string, privateKey: string, algorithm: string): string {
-    if (algorithm === Algorithm.HS256) {
+    if (algorithm === 'HS256') {
       const signature = this.gasUtilities.computeHmacSha256Signature(
         target,
         privateKey
@@ -168,7 +163,7 @@ export class Jwt {
   }
 
   /**
-   * Base64 Web Safe でデコードしてオブジェクトを生成する(個別クレーム検証用)
+   * Base64 Web Safe でデコードしてオブジェクトを生成する
    *
    * @param data 対象データ
    * @returns オブジェクト
@@ -198,9 +193,15 @@ export class Jwt {
     const date = new Date();
     date.setDate(date.getDate() + effectiveDays);
 
-    return date.getTime() / 1000;
+    return Math.round(date.getTime() / 1000);
   }
 
+  /**
+   * タイムスタンプを日付形式に変換する
+   *
+   * @param timeStamp タイムスタンプ
+   * @returns 日付形式(yyyy-MM-dd HH:mm:ss)
+   */
   public timeStampToDateTime(timeStamp: number): string {
     const date = new Date(timeStamp * 1000);
     return (

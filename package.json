@@ -1,7 +1,7 @@
 {
   "name": "jwt-for-google-apps-script",
   "version": "0.0.1",
-  "description": "Google Apps Scriptで使用できるJWTライブラリ",
+  "description": "JWT library for Google Apps Script",
   "main": "index.js",
   "scripts": {
     "build": "webpack",
@@ -10,6 +10,14 @@
   },
   "author": "fnya",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fnya/jwt-for-google-apps-script.git"
+  },
+  "keywords": [
+    "google-apps-script",
+    "jwt"
+  ],
   "devDependencies": {
     "@babel/core": "^7.18.10",
     "@babel/plugin-proposal-class-properties": "^7.18.6",

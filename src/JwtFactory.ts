@@ -1,4 +1,3 @@
-import { Algorithm } from './constant/Algorithm';
 import { GasUtilitiesImpl } from './utility/GasUtilitiesImpl';
 import { Jwt } from './Jwt';
 
@@ -12,7 +11,7 @@ export class JwtFactory {
    * @returns Jwt
    */
   public static create(): Jwt {
-    const algorithms = [Algorithm.HS256];
+    const algorithms = ['HS256'];
     return new Jwt(new GasUtilitiesImpl(), algorithms);
   }
 }

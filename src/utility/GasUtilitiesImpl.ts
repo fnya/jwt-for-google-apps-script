@@ -23,9 +23,9 @@ export class GasUtilitiesImpl implements GasUtilities {
    */
   public base64EncodeWebSafe(data: number[] | string): string {
     if (typeof data === 'string') {
-      return Utilities.base64EncodeWebSafe(data);
+      return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
     } else {
-      return Utilities.base64EncodeWebSafe(data);
+      return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
     }
   }
 

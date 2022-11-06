@@ -1,10 +1,8 @@
 /* eslint-disable no-undef */
-import { Algorithm } from '../src/constant/Algorithm';
 import { describe, test, beforeEach, expect, afterEach } from '@jest/globals';
 import { GasUtilities } from '../src/utility/GasUtilities';
 import { Jwt } from '../src/Jwt';
 import { JwtFactory } from '../src/JwtFactory';
-import { JwtType } from '../src/constant/JwtType';
 
 import { mock, instance, when, anything, verify, spy } from 'ts-mockito';
 describe('Jwt のテスト', () => {
@@ -16,7 +14,7 @@ describe('Jwt のテスト', () => {
     gasUtilitiesMock = mock<GasUtilities>();
     gasUtilities = instance(gasUtilitiesMock);
 
-    jwt = new Jwt(gasUtilities, [Algorithm.HS256]);
+    jwt = new Jwt(gasUtilities, ['HS256']);
   });
 
   afterEach(() => {
@@ -28,7 +26,7 @@ describe('Jwt のテスト', () => {
     test('アクセストークンを作成できること', () => {
       // 準備
       const sigunatureBytes = [1, 2];
-      const headerClaim = { alg: Algorithm.HS256, typ: JwtType.JWT };
+      const headerClaim = { alg: 'HS256', typ: 'JWT' };
       const payloadClaim = {
         iss: 'iss',
         sub: 'sub',
@@ -64,7 +62,7 @@ describe('Jwt のテスト', () => {
 
     test('署名アルゴリズムがない場合はエラーになること', () => {
       // 準備
-      const headerClaim = { typ: JwtType.JWT };
+      const headerClaim = { typ: 'JWT' };
       const payloadClaim = {};
 
       // 実行&検証
@@ -77,10 +75,10 @@ describe('Jwt のテスト', () => {
   describe('createHeaderClaim のテスト', () => {
     test('ヘッダークレームを作成できること', () => {
       // 準備
-      const expected = { alg: Algorithm.HS256, typ: JwtType.JWT };
+      const expected = { alg: 'HS256', typ: 'JWT' };
 
       // 実行
-      const actual = jwt.createHeaderClaim(Algorithm.HS256, JwtType.JWT);
+      const actual = jwt.createHeaderClaim('HS256', 'JWT');
 
       // 検証
       expect(actual).toEqual(expected);
@@ -88,10 +86,10 @@ describe('Jwt のテスト', () => {
 
     test('JwtTypeがなくてもヘッダークレームを作成できること', () => {
       // 準備
-      const expected = { alg: Algorithm.HS256 };
+      const expected = { alg: 'HS256' };
 
       // 実行
-      const actual = jwt.createHeaderClaim(Algorithm.HS256);
+      const actual = jwt.createHeaderClaim('HS256');
 
       // 検証
       expect(actual).toEqual(expected);
@@ -164,7 +162,7 @@ describe('Jwt のテスト', () => {
       ).thenReturn(sigunatureBytes);
 
       // 実行
-      const actual = jwt.sign(target, privateKey, Algorithm.HS256);
+      const actual = jwt.sign(target, privateKey, 'HS256');
 
       // 検証
       expect(actual).toEqual(expected);
@@ -177,13 +175,13 @@ describe('Jwt のテスト', () => {
 
       // 実行&検証
       expect(() => {
-        jwt.sign(target, privateKey, Algorithm.UNKOWN);
+        jwt.sign(target, privateKey, 'UNKOWN');
       }).toThrow('サポート外のアルゴリズムです');
     });
   });
 
   describe('decode のテスト', () => {
-    test('アクセストークン検証でエラーがない場合は例外が発生しないこと', () => {
+    test('Base64 Web Safeデコード後オブジェクト化されること', () => {
       // 準備
       const target = 'header.payload';
       const expected = 'encoded';
@@ -218,7 +216,7 @@ describe('Jwt のテスト', () => {
       ).thenReturn(sigunatureBytes);
 
       // 実行
-      const actual = jwt.sign(target, privateKey, Algorithm.HS256);
+      const actual = jwt.sign(target, privateKey, 'HS256');
 
       // 検証
       expect(actual).toEqual(expected);
@@ -230,7 +228,7 @@ describe('Jwt のテスト', () => {
 
       // 実行&検証
       expect(() => {
-        jwt.validate(privateKey, Algorithm.HS256, null);
+        jwt.validate(privateKey, 'HS256', null);
       }).toThrow('アクセストークンが不正です');
     });
 
@@ -241,7 +239,7 @@ describe('Jwt のテスト', () => {
 
       // 実行&検証
       expect(() => {
-        jwt.validate(privateKey, Algorithm.HS256, accessToken);
+        jwt.validate(privateKey, 'HS256', accessToken);
       }).toThrow('アクセストークンが不正です');
     });
 
@@ -252,7 +250,7 @@ describe('Jwt のテスト', () => {
 
       // 実行&検証
       expect(() => {
-        jwt.validate(privateKey, Algorithm.HS256, accessToken);
+        jwt.validate(privateKey, 'HS256', accessToken);
       }).toThrow('アクセストークンが不正です');
     });
 
@@ -273,7 +271,7 @@ describe('Jwt のテスト', () => {
 
       // 実行&検証
       expect(() => {
-        jwt.validate(privateKey, Algorithm.HS256, accessToken);
+        jwt.validate(privateKey, 'HS256', accessToken);
       }).toThrow('アクセストークンが不正です');
     });
 
@@ -299,7 +297,7 @@ describe('Jwt のテスト', () => {
 
         // 実行&検証
         expect(() => {
-          jwt.validate(privateKey, Algorithm.HS256, accessToken);
+          jwt.validate(privateKey, 'HS256', accessToken);
         }).toThrow('アクセストークンが不正です');
       });
 
@@ -310,7 +308,7 @@ describe('Jwt のテスト', () => {
         const privateKey = 'privateKey';
         const sigunatureBytes = [1, 2];
         const sigunature = 'sigunature';
-        const decodedHeader = { alg: Algorithm.UNKOWN };
+        const decodedHeader = { alg: 'UNKOWN' };
 
         when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
           sigunature
@@ -324,7 +322,7 @@ describe('Jwt のテスト', () => {
 
         // 実行&検証
         expect(() => {
-          jwt.validate(privateKey, Algorithm.HS256, accessToken);
+          jwt.validate(privateKey, 'HS256', accessToken);
         }).toThrow('アクセストークンが不正です');
       });
     });
@@ -337,7 +335,7 @@ describe('Jwt のテスト', () => {
         const privateKey = 'privateKey';
         const sigunatureBytes = [1, 2];
         const sigunature = 'sigunature';
-        const decodedHeader = { alg: Algorithm.HS256, typ: JwtType.JWT };
+        const decodedHeader = { alg: 'HS256', typ: 'JWT' };
         const decodedPayload = {};
 
         when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
@@ -355,7 +353,7 @@ describe('Jwt のテスト', () => {
 
         // 実行&検証
         expect(() => {
-          jwt.validate(privateKey, Algorithm.HS256, accessToken);
+          jwt.validate(privateKey, 'HS256', accessToken);
         }).toThrow('アクセストークンが不正です');
       });
 
@@ -366,7 +364,7 @@ describe('Jwt のテスト', () => {
         const privateKey = 'privateKey';
         const sigunatureBytes = [1, 2];
         const sigunature = 'sigunature';
-        const decodedHeader = { alg: Algorithm.HS256, typ: JwtType.JWT };
+        const decodedHeader = { alg: 'HS256', typ: 'JWT' };
         const decodedPayload = { iss: 'iss', sub: 'sub', aud: 'aud' };
 
         when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
@@ -384,7 +382,7 @@ describe('Jwt のテスト', () => {
 
         // 実行&検証
         expect(() => {
-          jwt.validate(privateKey, Algorithm.HS256, accessToken);
+          jwt.validate(privateKey, 'HS256', accessToken);
         }).toThrow('アクセストークンが不正です');
       });
 
@@ -395,7 +393,7 @@ describe('Jwt のテスト', () => {
         const privateKey = 'privateKey';
         const sigunatureBytes = [1, 2];
         const sigunature = 'sigunature';
-        const decodedHeader = { alg: Algorithm.HS256, typ: JwtType.JWT };
+        const decodedHeader = { alg: 'HS256', typ: 'JWT' };
         const decodedPayload = {
           iss: 'iss',
           sub: 'sub',
@@ -422,7 +420,7 @@ describe('Jwt のテスト', () => {
 
         // 実行&検証
         expect(() => {
-          jwt.validate(privateKey, Algorithm.HS256, accessToken);
+          jwt.validate(privateKey, 'HS256', accessToken);
         }).toThrow('アクセストークンが不正です');
       });
 
@@ -433,7 +431,7 @@ describe('Jwt のテスト', () => {
         const privateKey = 'privateKey';
         const sigunatureBytes = [1, 2];
         const sigunature = 'sigunature';
-        const decodedHeader = { alg: Algorithm.HS256, typ: JwtType.JWT };
+        const decodedHeader = { alg: 'HS256', typ: 'JWT' };
         const decodedPayload = {
           iss: 'iss',
           sub: 'sub',
@@ -459,7 +457,7 @@ describe('Jwt のテスト', () => {
         ).thenReturn(decodedPayload);
 
         // 実行&検証
-        jwt.validate(privateKey, Algorithm.HS256, accessToken);
+        jwt.validate(privateKey, 'HS256', accessToken);
       });
     });
   });

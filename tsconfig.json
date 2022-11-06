@@ -13,7 +13,6 @@
     "declarationMap": true,
     "composite": true,
     "lib": ["es6", "dom"],
-    "types": ["google-apps-script"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
