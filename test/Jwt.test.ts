@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import { Algorithm } from '../src/constant/Algorithm';
 import { describe, test, beforeEach, expect, afterEach } from '@jest/globals';
-import { GasPropertiesService } from '../src/utility/GasPropertiesService';
 import { GasUtilities } from '../src/utility/GasUtilities';
 import { Jwt } from '../src/Jwt';
 import { JwtFactory } from '../src/JwtFactory';
@@ -12,16 +11,12 @@ describe('Jwt のテスト', () => {
   let jwt: Jwt;
   let gasUtilitiesMock: any;
   let gasUtilities: GasUtilities;
-  let gasPropertiesServiceMock: any;
-  let gasPropertiesService: GasPropertiesService;
 
   beforeEach(() => {
     gasUtilitiesMock = mock<GasUtilities>();
     gasUtilities = instance(gasUtilitiesMock);
-    gasPropertiesServiceMock = mock<GasPropertiesService>();
-    gasPropertiesService = instance(gasPropertiesServiceMock);
 
-    jwt = new Jwt(gasUtilities, gasPropertiesService, [Algorithm.HS256]);
+    jwt = new Jwt(gasUtilities, [Algorithm.HS256]);
   });
 
   afterEach(() => {

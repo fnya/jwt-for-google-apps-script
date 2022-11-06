@@ -3,12 +3,10 @@ import { Algorithm } from './constant/Algorithm';
 import { GasUtilities } from './utility/GasUtilities';
 import { JwtType } from './constant/JwtType';
 import { Message } from './constant/Message';
-import { GasPropertiesService } from './utility/GasPropertiesService';
 
 /** JWT クラス */
 export class Jwt {
   private gasUtilities: GasUtilities;
-  private gasPropertiesService: GasPropertiesService;
   private algorithms: Algorithm[];
   private requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp']; // default
 
@@ -16,16 +14,10 @@ export class Jwt {
    * Jwtのコンストラクタ
    *
    * @param gasUtilities GasUtilities
-   * @param gasPropertiesService GasPropertiesService
    * @param algorithms 署名アルゴリズム配列
    */
-  constructor(
-    gasUtilities: GasUtilities,
-    gasPropertiesService: GasPropertiesService,
-    algorithms: Algorithm[]
-  ) {
+  constructor(gasUtilities: GasUtilities, algorithms: Algorithm[]) {
     this.gasUtilities = gasUtilities;
-    this.gasPropertiesService = gasPropertiesService;
     this.algorithms = algorithms;
   }
 
@@ -43,7 +35,7 @@ export class Jwt {
     privateKey: string
   ): string {
     if (!headerClaim.alg) {
-      throw new Error('署名アルゴリズムは必須です');
+      throw new Error(Message.REQUIRED_ALGORITHM_ERROR);
     }
 
     const encodedHeader = this.gasUtilities.base64EncodeWebSafe(
@@ -131,7 +123,7 @@ export class Jwt {
       return this.gasUtilities.base64EncodeWebSafe(signature);
     }
 
-    throw new Error('サポート外のアルゴリズムです');
+    throw new Error(Message.NO_SUPPORT_ALGORITHM_ERROR);
   }
 
   /**
