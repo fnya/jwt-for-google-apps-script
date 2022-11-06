@@ -63,7 +63,7 @@ const headerClaim = jwt.createHeaderClaim('HS256', 'JWT');
 //   自動作成クレーム
 //     exp: 有効期限
 //     iat: 作成日時
-const actual = jwt.createPayloadClaim('iss', 'sub', 'aud', 30);
+const payloadClaim = jwt.createPayloadClaim('iss', 'sub', 'aud', 30);
 // { "iss": "iss ", "sub": "sub", "aud": "aud", "exp": 1667727398, "iat": 1667725598}
 
 // システム固有のクレーム(プライベートクレーム)は以下のように指定する(adminの部分)
