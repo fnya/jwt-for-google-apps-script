@@ -1,7 +1,7 @@
 import { GasUtilities } from './GasUtilities';
 
 /**
- * Google Apps Scriptを使用するためのラッパークラス
+ * Google Apps Script の Utilities を使用するためのラッパークラス
  */
 export class GasUtilitiesImpl implements GasUtilities {
   /**
@@ -40,5 +40,29 @@ export class GasUtilitiesImpl implements GasUtilities {
     const json = Utilities.newBlob(decodedData).getDataAsString();
 
     return JSON.parse(json);
+  }
+
+  /**
+   * Sha512のハッシュ値を取得する
+   *
+   * @param data 対象データ
+   * @returns Sha512のハッシュ値
+   */
+  public sha512(data: string): number[] {
+    return Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_512,
+      data,
+      Utilities.Charset.UTF_8
+    );
+  }
+
+  /**
+   * Base64 エンコードを行う
+   *
+   * @param data 対象データ
+   * @returns エンコードされたデータ
+   */
+  public base64Encode(data: number[]): string {
+    return Utilities.base64Encode(data);
   }
 }

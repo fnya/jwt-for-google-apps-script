@@ -3,29 +3,30 @@ import { Algorithm } from './constant/Algorithm';
 import { GasUtilities } from './utility/GasUtilities';
 import { JwtType } from './constant/JwtType';
 import { Message } from './constant/Message';
-import { PayloadClaim } from './constant/PayloadClaim';
+import { GasPropertiesService } from './utility/GasPropertiesService';
 
-/** JWT ライブラリ */
+/** JWT クラス */
 export class Jwt {
   private gasUtilities: GasUtilities;
+  private gasPropertiesService: GasPropertiesService;
   private algorithms: Algorithm[];
-  private requiredPayloadClaims: PayloadClaim[];
+  private requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp']; // default
 
   /**
    * Jwtのコンストラクタ
    *
    * @param gasUtilities GasUtilities
+   * @param gasPropertiesService GasPropertiesService
    * @param algorithms 署名アルゴリズム配列
-   * @param requiredPayloadClaims 必須ペイロードクレーム配列
    */
   constructor(
     gasUtilities: GasUtilities,
-    algorithms: Algorithm[],
-    requiredPayloadClaims: PayloadClaim[]
+    gasPropertiesService: GasPropertiesService,
+    algorithms: Algorithm[]
   ) {
     this.gasUtilities = gasUtilities;
+    this.gasPropertiesService = gasPropertiesService;
     this.algorithms = algorithms;
-    this.requiredPayloadClaims = requiredPayloadClaims;
   }
 
   /**
@@ -134,7 +135,7 @@ export class Jwt {
   }
 
   /**
-   * アクセストークン検証を行う
+   * アクセストークンの検証を行う
    *
    * @param privateKey 秘密鍵
    * @param algorithm 署名アルゴリズム
@@ -182,6 +183,76 @@ export class Jwt {
    */
   public decode(data: string): string {
     return this.gasUtilities.base64DecodeWebSafeAndToObject(data);
+  }
+
+  /**
+   * リフレッシュトークンを作成する
+   *
+   * @param userSpecificValue ユーザー固有の値
+   */
+  public createRefreshToken(userSpecificValue: string): string {
+    const rand = Math.random();
+    const target = userSpecificValue + String(rand);
+    const hash = this.gasUtilities.sha512(target);
+    return this.gasUtilities.base64Encode(hash);
+  }
+
+  /**
+   * リフレッシュトークンの有効期限のタイムスタンプを作成する
+   *
+   * @param effectiveDays 有効日数
+   */
+  public createRefreshTokenExpiryTimeStamp(effectiveDays: number): number {
+    const date = new Date();
+    date.setDate(date.getDate() + effectiveDays);
+
+    return date.getTime() / 1000;
+  }
+
+  public timeStampToDateTime(timeStamp: number): string {
+    const date = new Date(timeStamp * 1000);
+    return (
+      date.getFullYear() +
+      '-' +
+      this.paddingZero(date.getMonth() + 1, 2) +
+      '-' +
+      this.paddingZero(date.getDate(), 2) +
+      ' ' +
+      this.paddingZero(date.getHours(), 2) +
+      ':' +
+      this.paddingZero(date.getMinutes(), 2) +
+      ':' +
+      this.paddingZero(date.getSeconds(), 2)
+    );
+  }
+
+  /**
+   * 必須ペイロードクレームを設定する
+   *
+   * @param requiredPayloadClaims 必須ペイロードクレームの配列
+   */
+  public setRequiredPayloadClaims(requiredPayloadClaims: string[]): void {
+    this.requiredPayloadClaims = requiredPayloadClaims;
+  }
+
+  /**
+   * 必須ペイロードクレームを設取得する
+   */
+  public getRequiredPayloadClaims(): string[] {
+    return this.requiredPayloadClaims;
+  }
+
+  /**
+   * 数値に前ゼロを付与する
+   *
+   * @param num 数値
+   * @param paddingLength 前ゼロ桁数
+   * @returns 前ゼロ付き数値(文字列)
+   */
+  private paddingZero(num: number, paddingLength: number): string {
+    return ('0'.repeat(paddingLength) + num.toString()).slice(
+      paddingLength * -1
+    );
   }
 
   /**

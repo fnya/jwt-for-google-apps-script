@@ -1,27 +1,27 @@
 /* eslint-disable no-undef */
-import { describe, test, beforeEach, expect, afterEach } from '@jest/globals';
-import { mock, instance, when, anything, verify } from 'ts-mockito';
 import { Algorithm } from '../src/constant/Algorithm';
-import { JwtType } from '../src/constant/JwtType';
-import { PayloadClaim } from '../src/constant/PayloadClaim';
-import { Jwt } from '../src/Jwt';
+import { describe, test, beforeEach, expect, afterEach } from '@jest/globals';
+import { GasPropertiesService } from '../src/utility/GasPropertiesService';
 import { GasUtilities } from '../src/utility/GasUtilities';
+import { Jwt } from '../src/Jwt';
+import { JwtFactory } from '../src/JwtFactory';
+import { JwtType } from '../src/constant/JwtType';
 
+import { mock, instance, when, anything, verify, spy } from 'ts-mockito';
 describe('Jwt のテスト', () => {
   let jwt: Jwt;
   let gasUtilitiesMock: any;
   let gasUtilities: GasUtilities;
+  let gasPropertiesServiceMock: any;
+  let gasPropertiesService: GasPropertiesService;
 
   beforeEach(() => {
     gasUtilitiesMock = mock<GasUtilities>();
     gasUtilities = instance(gasUtilitiesMock);
-    const requiredPayloadClaims = [
-      PayloadClaim.iss,
-      PayloadClaim.sub,
-      PayloadClaim.aud,
-      PayloadClaim.exp,
-    ];
-    jwt = new Jwt(gasUtilities, [Algorithm.HS256], requiredPayloadClaims);
+    gasPropertiesServiceMock = mock<GasPropertiesService>();
+    gasPropertiesService = instance(gasPropertiesServiceMock);
+
+    jwt = new Jwt(gasUtilities, gasPropertiesService, [Algorithm.HS256]);
   });
 
   afterEach(() => {
@@ -30,7 +30,7 @@ describe('Jwt のテスト', () => {
   });
 
   describe('createAccessToken のテスト', () => {
-    test('アクセストークンを取得できること', () => {
+    test('アクセストークンを作成できること', () => {
       // 準備
       const sigunatureBytes = [1, 2];
       const headerClaim = { alg: Algorithm.HS256, typ: JwtType.JWT };
@@ -466,6 +466,68 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         jwt.validate(privateKey, Algorithm.HS256, accessToken);
       });
+    });
+  });
+
+  describe('setRequiredPayloadClaims のテスト', () => {
+    test('必須ペイロードクレームが設定されること', () => {
+      // 準備
+      const myJwt = JwtFactory.create();
+      const requiredPayloadClaims = ['iss', 'exp'];
+
+      // 実行
+      myJwt.setRequiredPayloadClaims(requiredPayloadClaims);
+      const actual = myJwt.getRequiredPayloadClaims();
+
+      // 検証
+      expect(actual).toEqual(requiredPayloadClaims);
+    });
+  });
+
+  describe('createRefreshToken のテスト', () => {
+    test('リフレッシュトークンが作成されること', () => {
+      // 準備
+      const expected = 'encoded';
+      const hashed = [1, 2, 3];
+      const mathSpy = spy(Math);
+      when(gasUtilitiesMock.sha512('user@example.com0.123')).thenReturn(hashed);
+      when(gasUtilitiesMock.base64Encode(hashed)).thenReturn(expected);
+      when(mathSpy.random()).thenReturn(0.123);
+
+      // 実行
+      const actual = jwt.createRefreshToken('user@example.com');
+
+      // 検証
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('createRefreshTokenExpiryTimeStamp のテスト', () => {
+    test('タイプスタンプが作成されること', () => {
+      // 準備
+      const expected = 1670169723; // 2022-12-5 01:02:03
+      const mockDate = new Date(2022, 10, 5, 1, 2, 3);
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
+
+      // 実行
+      const actual = jwt.createRefreshTokenExpiryTimeStamp(30);
+
+      // 検証
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('timeStampToDateTime のテスト', () => {
+    test('タイプスタンプが正しく変換されること', () => {
+      // 準備
+      const expected = '2022-12-05 01:02:03';
+
+      // 実行
+      const actual = jwt.timeStampToDateTime(1670169723);
+
+      // 検証
+      expect(actual).toEqual(expected);
     });
   });
 });
