@@ -5,6 +5,8 @@ rm -rf dist
 
 mkdir dist
 
+tsc --build --clean
+
 tsc --build
 
 cp package.json dist
