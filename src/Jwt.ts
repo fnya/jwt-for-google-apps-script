@@ -283,7 +283,7 @@ export class Jwt {
     const now = Date.now() / 1000;
     const exp = Number(payloadClaim.exp);
     if (exp < now) {
-      throw new Error(Message.ACCESS_TOKEN_ERROR);
+      throw new Error(Message.ACCESS_TOKEN_EXPIRED_ERROR);
     }
   }
 }

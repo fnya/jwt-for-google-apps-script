@@ -229,7 +229,7 @@ describe('Jwt のテスト', () => {
       // 実行&検証
       expect(() => {
         jwt.validate(privateKey, 'HS256', null);
-      }).toThrow('アクセストークンが不正です');
+      }).toThrow('JWTアクセストークンが不正です');
     });
 
     test('アクセストークンの.の数が少ない場合は例外が発生すること', () => {
@@ -240,7 +240,7 @@ describe('Jwt のテスト', () => {
       // 実行&検証
       expect(() => {
         jwt.validate(privateKey, 'HS256', accessToken);
-      }).toThrow('アクセストークンが不正です');
+      }).toThrow('JWTアクセストークンが不正です');
     });
 
     test('アクセストークンの.の数が多い場合は例外が発生すること', () => {
@@ -251,7 +251,7 @@ describe('Jwt のテスト', () => {
       // 実行&検証
       expect(() => {
         jwt.validate(privateKey, 'HS256', accessToken);
-      }).toThrow('アクセストークンが不正です');
+      }).toThrow('JWTアクセストークンが不正です');
     });
 
     test('アクセストークンの署名検証に失敗した場合に例外が発生すること', () => {
@@ -272,7 +272,7 @@ describe('Jwt のテスト', () => {
       // 実行&検証
       expect(() => {
         jwt.validate(privateKey, 'HS256', accessToken);
-      }).toThrow('アクセストークンが不正です');
+      }).toThrow('JWTアクセストークンが不正です');
     });
 
     describe('ヘッダークレームのテスト', () => {
@@ -298,7 +298,7 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         expect(() => {
           jwt.validate(privateKey, 'HS256', accessToken);
-        }).toThrow('アクセストークンが不正です');
+        }).toThrow('JWTアクセストークンが不正です');
       });
 
       test('ヘッダークレームの検証アルゴリズムが許可がない場合は例外が発生すること', () => {
@@ -323,7 +323,7 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         expect(() => {
           jwt.validate(privateKey, 'HS256', accessToken);
-        }).toThrow('アクセストークンが不正です');
+        }).toThrow('JWTアクセストークンが不正です');
       });
     });
 
@@ -354,7 +354,7 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         expect(() => {
           jwt.validate(privateKey, 'HS256', accessToken);
-        }).toThrow('アクセストークンが不正です');
+        }).toThrow('JWTアクセストークンが不正です');
       });
 
       test('ペイロードクレームの必須項目が一部ないは例外が発生すること', () => {
@@ -383,7 +383,7 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         expect(() => {
           jwt.validate(privateKey, 'HS256', accessToken);
-        }).toThrow('アクセストークンが不正です');
+        }).toThrow('JWTアクセストークンが不正です');
       });
 
       test('ペイロードクレームのexpが期限切れの場合は例外が発生すること', () => {
@@ -421,7 +421,7 @@ describe('Jwt のテスト', () => {
         // 実行&検証
         expect(() => {
           jwt.validate(privateKey, 'HS256', accessToken);
-        }).toThrow('アクセストークンが不正です');
+        }).toThrow('JWTアクセストークンの期限が切れています');
       });
 
       test('ペイロードクレームに問題がない場合は例外が発生しないこと', () => {

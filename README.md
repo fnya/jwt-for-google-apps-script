@@ -126,7 +126,11 @@ const accessToken = jwt.createAccessToken(
 try {
   jwt.validate(privateKey, 'HS256', accessToken);
 } catch (e) {
-  console.log(e.message);
+  if (e.message === 'JWTアクセストークンの期限が切れています') {
+    console.log('アクセストークン期限切れ');
+  } else {
+    console.log(e.message); // JWTアクセストークンが不正です
+  }
 }
 ```
 
