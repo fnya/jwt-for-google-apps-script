@@ -5,18 +5,16 @@ import { Message } from './constant/Message';
 /** JWT クラス */
 export class Jwt {
   private gasUtilities: GasUtilities;
-  private algorithms: string[];
+  private algorithms = ['HS256']; // サポートは HS256 のみ。拡張のため配列にしている。
   private requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp']; // default
 
   /**
    * Jwtのコンストラクタ
    *
    * @param gasUtilities GasUtilities
-   * @param algorithms 署名アルゴリズム配列
    */
-  constructor(gasUtilities: GasUtilities, algorithms: string[]) {
+  constructor(gasUtilities: GasUtilities) {
     this.gasUtilities = gasUtilities;
-    this.algorithms = algorithms;
   }
 
   /**
@@ -262,6 +260,7 @@ export class Jwt {
     const filtereAalgorithms = this.algorithms.filter(
       (algorithm) => algorithm === headerClaim.alg
     );
+
     if (filtereAalgorithms.length === 0) {
       throw new Error(Message.ACCESS_TOKEN_ERROR);
     }

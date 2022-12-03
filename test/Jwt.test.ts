@@ -3,8 +3,8 @@ import { describe, test, beforeEach, expect, afterEach } from '@jest/globals';
 import { GasUtilities } from '../src/utility/GasUtilities';
 import { Jwt } from '../src/Jwt';
 import { JwtFactory } from '../src/JwtFactory';
-
 import { mock, instance, when, anything, verify, spy } from 'ts-mockito';
+
 describe('Jwt のテスト', () => {
   let jwt: Jwt;
   let gasUtilitiesMock: any;
@@ -14,7 +14,7 @@ describe('Jwt のテスト', () => {
     gasUtilitiesMock = mock<GasUtilities>();
     gasUtilities = instance(gasUtilitiesMock);
 
-    jwt = new Jwt(gasUtilities, ['HS256']);
+    jwt = new Jwt(gasUtilities);
   });
 
   afterEach(() => {
@@ -183,8 +183,8 @@ describe('Jwt のテスト', () => {
   describe('decode のテスト', () => {
     test('Base64 Web Safeデコード後オブジェクト化されること', () => {
       // 準備
-      const target = 'header.payload';
-      const expected = 'encoded';
+      const target = 'Base64WebSafe_EncodedHeaderClaim';
+      const expected = { alg: 'HS256', typ: 'JWT' };
 
       when(gasUtilitiesMock.base64DecodeWebSafeAndToObject(target)).thenReturn(
         expected

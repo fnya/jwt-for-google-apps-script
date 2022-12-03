@@ -11,7 +11,6 @@ export class JwtFactory {
    * @returns Jwt
    */
   public static create(): Jwt {
-    const algorithms = ['HS256'];
-    return new Jwt(new GasUtilitiesImpl(), algorithms);
+    return new Jwt(new GasUtilitiesImpl());
   }
 }
