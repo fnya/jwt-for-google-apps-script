@@ -168,7 +168,7 @@ export class Jwt {
    * @param data 対象データ
    * @returns オブジェクト
    */
-  public decode(data: string): string {
+  public decode(data: string): any {
     return this.gasUtilities.base64DecodeWebSafeAndToObject(data);
   }
 
