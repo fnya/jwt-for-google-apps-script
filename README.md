@@ -1,6 +1,8 @@
 # JWT for Google Apps Script
 
-`JWT for Google Apps Script` は、TypeScript で作成された Google Apps Script 用の ライブラリです。`MIT ライセンス` です。
+`JWT for Google Apps Script` は、TypeScript で作成された Google Apps Script 用の ライブラリです。
+
+`MIT ライセンス` になります。
 
 ## 前提条件
 
