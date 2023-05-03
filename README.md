@@ -176,8 +176,8 @@ const expiryTimeStampString = jwt.timeStampToDateTime(expiryTimeStamp);
 const headerClaim = 'ewoJImFsZyI6ICJIUzI1NiIsCgkidHlwIjogIkpXVCIKfQ';
 const decodedHeaderClaim = jwt.decode(headerClaim);
 // {
-//   "alg": "HS256",
-//   "typ": "JWT"
+//   alg: "HS256",
+//   typ: "JWT"
 // }
 ```
 
