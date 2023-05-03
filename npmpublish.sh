@@ -7,7 +7,7 @@ mkdir dist
 
 tsc --build --clean
 
-tsc --build
+tsc
 
 cp package.json dist
 
