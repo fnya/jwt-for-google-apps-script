@@ -110,12 +110,20 @@ const payloadClaim = jwt.createPayloadClaim('iss', 'sub', 'aud', 30);
 // const payloadClaim = jwt.createPayloadClaim('iss', 'sub', 'aud', 30, { admin: true });
 
 // アクセストークンの作成
-const accessToken = jwt.createAccessToken(
+const accessTokenJson = jwt.createAccessToken(
   headerClaim,
   payloadClaim,
   privateKey
 );
-// ${Base64 Web Safeでエンコードした headerClaim}.${Base64 Web Safeでエンコードした payloadClaim}.${署名}
+// {
+//   "accessToken": "${Base64 Web Safeでエンコードした headerClaim}.${Base64 Web Safeでエンコードした payloadClaim}.${署名}",
+//   "expires": 1516239022
+// }
+
+// アクセストークンの取得
+const accessToken = JSON.parse(accessTokenJson);
+console.log(accessToken.accessToken); // アクセストークン
+console.log(accessToken.expires); // アクセストークン有効期限 ex. 1516239022
 ```
 
 #### アクセストークンの検証

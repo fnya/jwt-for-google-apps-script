@@ -23,7 +23,7 @@ export class Jwt {
    * @param headerClaim ヘッダークレーム
    * @param payloadClaim ペイロードクレーム
    * @param privateKey 秘密鍵
-   * @returns アクセストークン
+   * @returns アクセストークンと有効期限
    */
   public createAccessToken(
     headerClaim: any,
@@ -46,7 +46,12 @@ export class Jwt {
       headerClaim.alg
     );
 
-    return encodedHeader + '.' + encodedPayload + '.' + signature;
+    const response = {
+      accessToken: encodedHeader + '.' + encodedPayload + '.' + signature,
+      expires: payloadClaim.exp,
+    };
+
+    return JSON.stringify(response, null, '\t');
   }
 
   /**
@@ -223,7 +228,7 @@ export class Jwt {
    * @param requiredPayloadClaims 必須ペイロードクレームの配列
    */
   public setRequiredPayloadClaims(requiredPayloadClaims: string[]): void {
-    this.requiredPayloadClaims = requiredPayloadClaims;
+    this.requiredPayloadClaims = [...requiredPayloadClaims];
   }
 
   /**
@@ -274,7 +279,7 @@ export class Jwt {
   private validatePayloadClaim(payloadClaim: any): void {
     // 必須ペイロードクレームチェック
     this.requiredPayloadClaims.forEach((claim) => {
-      if (!payloadClaim[claim]) {
+      if (payloadClaim[claim] === undefined) {
         throw new Error(Message.ACCESS_TOKEN_ERROR);
       }
     });

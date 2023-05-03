@@ -40,7 +40,7 @@ describe('Jwt のテスト', () => {
       const header = 'header';
       const payload = 'payload';
       const sigunature = 'sigunature';
-      const expected = 'header.payload.sigunature';
+      const expected = `{\n\t"accessToken": "header.payload.sigunature",\n\t"expires": 1516239022\n}`;
 
       when(gasUtilitiesMock.base64EncodeWebSafe(headerJson)).thenReturn(header);
       when(gasUtilitiesMock.base64EncodeWebSafe(payloadJson)).thenReturn(
@@ -202,11 +202,18 @@ describe('Jwt のテスト', () => {
   describe('validate のテスト', () => {
     test('アクセストークン検証でエラーがない場合は例外が発生しないこと', () => {
       // 準備
-      const target = 'header.payload';
       const privateKey = 'privateKey';
       const sigunatureBytes = [1, 2];
       const sigunature = 'sigunature';
-      const expected = 'sigunature';
+      const accessToken = 'header.payload.sigunature';
+      const target = 'header.payload';
+      const decodedHeader = { alg: 'HS256', typ: 'JWT' };
+      const decodedPayload = {
+        iss: 'iss',
+        sub: 'sub',
+        aud: 'aud',
+        exp: 1667577724,
+      };
 
       when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
         sigunature
@@ -214,12 +221,21 @@ describe('Jwt のテスト', () => {
       when(
         gasUtilitiesMock.computeHmacSha256Signature(target, privateKey)
       ).thenReturn(sigunatureBytes);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('header')
+      ).thenReturn(decodedHeader);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('payload')
+      ).thenReturn(decodedPayload);
 
-      // 実行
-      const actual = jwt.sign(target, privateKey, 'HS256');
+      const mockDate = new Date(2022, 10, 5, 1, 2, 3); /// 1667577723
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
 
-      // 検証
-      expect(actual).toEqual(expected);
+      // 実行&検証
+      expect(() => {
+        jwt.validate(privateKey, 'HS256', accessToken);
+      }).not.toThrow();
     });
 
     test('アクセストークンがない場合は例外が発生すること', () => {
@@ -474,6 +490,92 @@ describe('Jwt のテスト', () => {
 
       // 検証
       expect(actual).toEqual(requiredPayloadClaims);
+    });
+
+    test('必須ペイロードクレームが設定され正しく検証されること', () => {
+      // 準備
+      const myJwt = new Jwt(gasUtilities);
+      const requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp', 'admin']; // admin 追加
+      myJwt.setRequiredPayloadClaims(requiredPayloadClaims);
+
+      const privateKey = 'privateKey';
+      const sigunatureBytes = [1, 2];
+      const sigunature = 'sigunature';
+      const accessToken = 'header.payload.sigunature';
+      const target = 'header.payload';
+      const decodedHeader = { alg: 'HS256', typ: 'JWT' };
+      const decodedPayload = {
+        iss: 'iss',
+        sub: 'sub',
+        aud: 'aud',
+        exp: 1667577724,
+        admin: true,
+      };
+
+      when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
+        sigunature
+      );
+      when(
+        gasUtilitiesMock.computeHmacSha256Signature(target, privateKey)
+      ).thenReturn(sigunatureBytes);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('header')
+      ).thenReturn(decodedHeader);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('payload')
+      ).thenReturn(decodedPayload);
+
+      const mockDate = new Date(2022, 10, 5, 1, 2, 3); /// 1667577723
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
+
+      // 実行&検証
+      expect(() => {
+        myJwt.validate(privateKey, 'HS256', accessToken);
+      }).not.toThrow();
+    });
+
+    test('必須ペイロードクレームが設定され正しく追加項目が不足していた場合は検証エラーになること', () => {
+      // 準備
+      const myJwt = new Jwt(gasUtilities);
+      const requiredPayloadClaims = ['iss', 'sub', 'aud', 'exp', 'admin']; // admin 追加
+      myJwt.setRequiredPayloadClaims(requiredPayloadClaims);
+
+      const privateKey = 'privateKey';
+      const sigunatureBytes = [1, 2];
+      const sigunature = 'sigunature';
+      const accessToken = 'header.payload.sigunature';
+      const target = 'header.payload';
+      const decodedHeader = { alg: 'HS256', typ: 'JWT' };
+      const decodedPayload = {
+        iss: 'iss',
+        sub: 'sub',
+        aud: 'aud',
+        exp: 1667577724,
+        // admin: true,
+      };
+
+      when(gasUtilitiesMock.base64EncodeWebSafe(sigunatureBytes)).thenReturn(
+        sigunature
+      );
+      when(
+        gasUtilitiesMock.computeHmacSha256Signature(target, privateKey)
+      ).thenReturn(sigunatureBytes);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('header')
+      ).thenReturn(decodedHeader);
+      when(
+        gasUtilitiesMock.base64DecodeWebSafeAndToObject('payload')
+      ).thenReturn(decodedPayload);
+
+      const mockDate = new Date(2022, 10, 5, 1, 2, 3); /// 1667577723
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
+
+      // 実行&検証
+      expect(() => {
+        myJwt.validate(privateKey, 'HS256', accessToken);
+      }).toThrow('JWTアクセストークンが不正です');
     });
   });
 
