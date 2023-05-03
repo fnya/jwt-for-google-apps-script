@@ -29,7 +29,7 @@ export class Jwt {
     headerClaim: any,
     payloadClaim: any,
     privateKey: string
-  ): string {
+  ): any {
     if (!headerClaim.alg) {
       throw new Error(Message.REQUIRED_ALGORITHM_ERROR);
     }
@@ -46,12 +46,10 @@ export class Jwt {
       headerClaim.alg
     );
 
-    const response = {
+    return {
       accessToken: encodedHeader + '.' + encodedPayload + '.' + signature,
       expires: payloadClaim.exp,
     };
-
-    return JSON.stringify(response, null, '\t');
   }
 
   /**

@@ -40,7 +40,10 @@ describe('Jwt のテスト', () => {
       const header = 'header';
       const payload = 'payload';
       const sigunature = 'sigunature';
-      const expected = `{\n\t"accessToken": "header.payload.sigunature",\n\t"expires": 1516239022\n}`;
+      const expected = {
+        accessToken: 'header.payload.sigunature',
+        expires: 1516239022,
+      };
 
       when(gasUtilitiesMock.base64EncodeWebSafe(headerJson)).thenReturn(header);
       when(gasUtilitiesMock.base64EncodeWebSafe(payloadJson)).thenReturn(
